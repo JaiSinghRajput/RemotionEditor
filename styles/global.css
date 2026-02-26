@@ -1,1 +1,14 @@
 @import "tailwindcss";
+/* Prevent font flickering during load */
+@supports (font-display: block) {
+  @font-face {
+    font-display: block;
+  }
+}
+
+/* Ensure fonts are loaded before rendering */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

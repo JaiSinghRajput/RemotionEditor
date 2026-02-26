@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   AbsoluteFill,
   interpolate,
@@ -20,6 +20,7 @@ function applyTransformText(text: string, mode: TextLayer["textTransform"]) {
 export default function TextLayerComp({ layer }: { layer: TextLayer }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   // relative frame inside layer
   const localFrame = frame - layer.from;
@@ -28,9 +29,20 @@ export default function TextLayerComp({ layer }: { layer: TextLayer }) {
   const inAnim = layer.animationIn;
   const outAnim = layer.animationOut;
 
-  // ✅ load font dynamically in browser preview
+  // ✅ load font dynamically in browser preview and wait for it
   useEffect(() => {
-    ensureGoogleFontLoaded(layer.fontFamily);
+    let mounted = true;
+    setFontLoaded(false);
+    
+    ensureGoogleFontLoaded(layer.fontFamily).then(() => {
+      if (mounted) {
+        setFontLoaded(true);
+      }
+    });
+
+    return () => {
+      mounted = false;
+    };
   }, [layer.fontFamily]);
   let opacity = layer.opacity;
 
@@ -98,6 +110,9 @@ export default function TextLayerComp({ layer }: { layer: TextLayer }) {
 
   const finalTransform = `${t.transform} translateY(${animTranslateY}px) scale(${animScale})`;
 
+  // Hide text until font is loaded to prevent flickering
+  const finalOpacity = fontLoaded ? opacity : 0;
+
   return (
     <AbsoluteFill>
       <div
@@ -106,7 +121,7 @@ export default function TextLayerComp({ layer }: { layer: TextLayer }) {
           left: layer.x,
           top: layer.y,
 
-          opacity,
+          opacity: finalOpacity,
           transform: finalTransform,
           transformOrigin: "top left",
 

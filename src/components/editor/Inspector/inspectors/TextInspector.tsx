@@ -6,9 +6,10 @@ import FieldNumber from "../fields/FieldNumber";
 import FieldColor from "../fields/FieldColor";
 import FieldToggle from "../fields/FieldToggle";
 import FieldTransition from "../fields/FieldTransition";
+import FieldFontSearch from "../fields/FieldFontSearch";
 import { useEditorStore } from "../../../../lib/editor/store";
 import { TextLayer } from "../../../../lib/editor/types";
-import { fontOptoions, fontstyleOptions, fontWeightOptions } from "../../../../assets/fonts";
+import { fontWeightOptions, fontstyleOptions } from "../../../../assets/fonts";
 
 export default function TextInspector({ layer }: { layer: TextLayer }) {
   const updateLayer = useEditorStore((s) => s.updateLayer);
@@ -40,12 +41,13 @@ export default function TextInspector({ layer }: { layer: TextLayer }) {
           onChange={(v) => updateLayer(layer.id, "text", { fontSize: v })}
         />
 
-        <FieldSelect
-          label="Font"
-          value={layer.fontFamily}
-          options={fontOptoions}
-          onChange={(v) => updateLayer(layer.id, "text", { fontFamily: v })}
-        />
+        <div>
+          <FieldFontSearch
+            label="Font"
+            value={layer.fontFamily}
+            onChange={(v) => updateLayer(layer.id, "text", { fontFamily: v })}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
