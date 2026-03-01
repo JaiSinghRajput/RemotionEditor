@@ -3,6 +3,7 @@ import RenderButton from "./Controls/RenderButton";
 import UndoRedo from "./Controls/UndoRedo";
 import FormatSwitcher from "./Controls/FormatSwitcher";
 import DurationControl from "./Controls/DurationControl";
+import SaveTemplateButton from "./Controls/SaveTemplateButton";
 
 export default function Topbar() {
   return (
@@ -15,6 +16,8 @@ export default function Topbar() {
         <FormatSwitcher />
         <div className="w-px h-6 bg-white/10"></div>
         <UndoRedo />
+        <div className="w-px h-6 bg-white/10"></div>
+        <SaveTemplateButton />
         <RenderButton />
       </div>
     </div>

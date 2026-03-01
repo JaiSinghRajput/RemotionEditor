@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { BackgroundLayer, Project, TextLayer } from "./types";
+import { AudioLayer, BackgroundLayer, Project, TextLayer } from "./types";
 
 export const createBackgroundLayer = (partial?: Partial<BackgroundLayer>): BackgroundLayer => ({
   id: crypto.randomUUID(),
@@ -15,6 +15,27 @@ export const createBackgroundLayer = (partial?: Partial<BackgroundLayer>): Backg
   transitionIn: { type: "fade", duration: 10 },
   transitionOut: { type: "fade", duration: 10 },
 });
+
+export function createAudioLayer(project: Project | null | undefined): AudioLayer {
+  const fps = project?.fps ?? 30;
+  const durationInFrames = project?.durationInFrames ?? fps * 10;
+
+  return {
+    id: nanoid(),
+    type: "audio",
+    name: "Audio",
+    from: 0,
+    to: durationInFrames,
+    zIndex: 5,
+    enabled: true,
+    src: "",
+    volume: 1,
+    startFrom: 0,
+    transitionIn: { type: "none" },
+    transitionOut: { type: "none" },
+  };
+}
+
 export function createTextLayer(project: Project | null | undefined): TextLayer {
   const fps = project?.fps ?? 30;
   const durationInFrames = project?.durationInFrames ?? fps * 10;

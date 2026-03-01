@@ -1,4 +1,9 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
+
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   try {
@@ -9,14 +14,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Convert file to base64 data URL
-    const buffer = await file.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    await mkdir(uploadsDir, { recursive: true });
+
+    const sanitizedOriginalName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const extension = path.extname(sanitizedOriginalName);
+    const baseName = path.basename(sanitizedOriginalName, extension);
+    const fileName = `${baseName}-${randomUUID()}${extension}`;
+    const absoluteFilePath = path.join(uploadsDir, fileName);
+
+    await writeFile(absoluteFilePath, buffer);
+
+    const fileUrl = `/uploads/${fileName}`;
 
     return NextResponse.json({
-      url: dataUrl,
-      filename: file.name,
+      url: fileUrl,
+      filename: fileName,
     });
   } catch (error) {
     console.error("Upload error:", error);

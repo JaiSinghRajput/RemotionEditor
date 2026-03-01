@@ -21,6 +21,7 @@ export default function TimelineLayerItem({ layer }: { layer: Layer }) {
   const startClientX = useRef(0);
   const initialFrom = useRef(0);
   const initialTo = useRef(0);
+  const initialAudioStartFrom = useRef(0);
 
   if (!project) return null;
 
@@ -51,6 +52,7 @@ export default function TimelineLayerItem({ layer }: { layer: Layer }) {
 
     initialFrom.current = layer.from;
     initialTo.current = layer.to;
+    initialAudioStartFrom.current = layer.type === "audio" ? (layer.startFrom ?? 0) : 0;
 
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   }
@@ -74,7 +76,14 @@ export default function TimelineLayerItem({ layer }: { layer: Layer }) {
 
     if (dragMode === "resize-left") {
       const newFrom = clamp(initialFrom.current + snappedDf, 0, initialTo.current - 1);
-      updateLayer(layer.id, layer.type, { from: newFrom } as any);
+
+      if (layer.type === "audio") {
+        const deltaFrames = newFrom - initialFrom.current;
+        const newStartFrom = Math.max(0, initialAudioStartFrom.current + deltaFrames);
+        updateLayer(layer.id, "audio", { from: newFrom, startFrom: newStartFrom } as any);
+      } else {
+        updateLayer(layer.id, layer.type, { from: newFrom } as any);
+      }
       return;
     }
 
@@ -92,7 +101,11 @@ export default function TimelineLayerItem({ layer }: { layer: Layer }) {
   return (
     <div
       className={`absolute top-1 h-9 rounded-lg cursor-grab active:cursor-grabbing select-none transition-all ${
-        layer.type === "background" ? "bg-gradient-to-r from-slate-600 to-slate-700" : "bg-gradient-to-r from-violet-600 to-violet-700"
+        layer.type === "background"
+          ? "bg-gradient-to-r from-slate-600 to-slate-700"
+          : layer.type === "audio"
+          ? "bg-gradient-to-r from-cyan-600 to-cyan-700"
+          : "bg-gradient-to-r from-violet-600 to-violet-700"
       } ${selected ? "ring-2 ring-blue-500 shadow-lg" : "shadow"} ${dragMode ? "opacity-90" : "opacity-100"}`}
       style={{
         left: leftPx,

@@ -14,10 +14,24 @@ export default function UploadAssetButton() {
 
   const selectedLayer = project?.layers.find((l) => l.id === selectedLayerId);
   const isBackgroundSelected = selectedLayer?.type === "background";
+  const isAudioSelected = selectedLayer?.type === "audio";
+  const uploadMode: "background" | "audio" = isAudioSelected ? "audio" : "background";
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (uploadMode === "audio" && !file.type.startsWith("audio/")) {
+      setError("Please choose an audio file.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    if (uploadMode === "background" && !file.type.startsWith("image/")) {
+      setError("Please choose an image file.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -39,15 +53,22 @@ export default function UploadAssetButton() {
 
       if (!project) return;
 
-      // Priority: use selected layer if it's a background, otherwise use first background layer
-      let targetLayer = isBackgroundSelected
-        ? selectedLayer
-        : project.layers.find((l) => l.type === "background");
-
-      if (targetLayer && targetLayer.type === "background") {
-        updateLayer(targetLayer.id, "background", { src: data.url });
+      if (uploadMode === "audio") {
+        if (selectedLayer && selectedLayer.type === "audio") {
+          updateLayer(selectedLayer.id, "audio", { src: data.url });
+        } else {
+          setError("Please select an audio layer first.");
+        }
       } else {
-        setError("Please select a background layer first.");
+        const targetLayer = isBackgroundSelected
+          ? selectedLayer
+          : project.layers.find((l) => l.type === "background");
+
+        if (targetLayer && targetLayer.type === "background") {
+          updateLayer(targetLayer.id, "background", { src: data.url });
+        } else {
+          setError("Please select a background layer first.");
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
@@ -61,23 +82,44 @@ export default function UploadAssetButton() {
 
   const backgroundLayers = project?.layers.filter((l) => l.type === "background") ?? [];
   const hasBackgroundLayers = backgroundLayers.length > 0;
+  const audioLayers = project?.layers.filter((l) => l.type === "audio") ?? [];
+  const hasAudioLayers = audioLayers.length > 0;
+  const canUpload = uploadMode === "audio" ? hasAudioLayers : hasBackgroundLayers;
+
+  const buttonLabel = isLoading
+    ? "Uploading..."
+    : uploadMode === "audio"
+    ? isAudioSelected
+      ? "↑ Upload Audio"
+      : "↑ Select Audio Layer"
+    : isBackgroundSelected
+    ? "↑ Upload BG"
+    : "↑ Select BG Layer";
+
+  const buttonTitle = uploadMode === "audio"
+    ? isAudioSelected
+      ? "Upload to selected audio layer"
+      : "Select an audio layer first"
+    : isBackgroundSelected
+    ? "Upload to selected background"
+    : "Select a background layer first";
 
   return (
     <div className="flex flex-col gap-2">
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={uploadMode === "audio" ? "audio/*" : "image/*"}
         onChange={handleFileSelect}
         className="hidden"
       />
       <button
         onClick={() => fileInputRef.current?.click()}
-        disabled={isLoading || !hasBackgroundLayers}
+        disabled={isLoading || !canUpload}
         className="w-full px-3 py-2 rounded-lg border border-blue-500/50 text-sm mb-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 hover:text-blue-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-        title={isBackgroundSelected ? "Upload to selected background" : "Select a background layer first"}
+        title={buttonTitle}
       >
-        {isLoading ? "Uploading..." : isBackgroundSelected ? "↑ Upload BG" : "↑ Select BG Layer"}
+        {buttonLabel}
       </button>
       {error && <div className="text-xs text-red-400 px-2">{error}</div>}
     </div>

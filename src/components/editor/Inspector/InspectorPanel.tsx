@@ -3,6 +3,7 @@
 import { useEditorStore } from "../../../lib/editor/store";
 import BackgroundInspector from "./inspectors/BackgroundInspector";
 import TextInspector from "./inspectors/TextInspector";
+import AudioInspector from "./inspectors/AudioInspector";
 
 export default function InspectorPanel() {
   const project = useEditorStore((s) => s.project);
@@ -19,6 +20,7 @@ export default function InspectorPanel() {
       <div className="space-y-4">
         {layer.type === "text" && <TextInspector layer={layer} />}
         {layer.type === "background" && <BackgroundInspector layer={layer} />}
+        {layer.type === "audio" && <AudioInspector layer={layer} />}
       </div>
     </div>
   );

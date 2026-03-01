@@ -1,6 +1,6 @@
 "use client";
 
-import { createBackgroundLayer, createTextLayer } from "../../../lib/editor/factories";
+import { createAudioLayer, createBackgroundLayer, createTextLayer } from "../../../lib/editor/factories";
 import { useEditorStore } from "../../../lib/editor/store";
 
 export default function AddLayerMenu() {
@@ -15,6 +15,10 @@ export default function AddLayerMenu() {
   const handleAddBackground = () => {
     if (!project) return;
     addLayer(createBackgroundLayer());
+  };
+  const handleAddAudio = () => {
+    if (!project) return;
+    addLayer(createAudioLayer(project));
   };
   return (
     <div className="w-full flex gap-2 mb-3">
@@ -31,6 +35,13 @@ export default function AddLayerMenu() {
         onClick={handleAddBackground}
       >
         + BG
+      </button>
+      <button
+        className="flex-1 px-2 py-2 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white text-sm cursor-pointer font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!project}
+        onClick={handleAddAudio}
+      >
+        + Audio
       </button>
     </div>
   );

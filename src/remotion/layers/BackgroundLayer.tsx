@@ -1,4 +1,4 @@
-import { AbsoluteFill, Img, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Img, useCurrentFrame, useVideoConfig } from "remotion";
 import { Gif } from "@remotion/gif";
 import { getTransitionStyle } from "../transitions/getTransitionStyle";
 import { BackgroundLayer } from "../../lib/editor/types";
@@ -9,7 +9,7 @@ export default function BackgroundLayerComp({ layer }: { layer: BackgroundLayer 
 
   if (!layer.src) return <AbsoluteFill style={{ backgroundColor: "black" }} />;
 
-  const localFrame = frame - layer.from;
+  const localFrame = frame;
   const duration = layer.to - layer.from;
 
   const t = getTransitionStyle({
@@ -26,26 +26,24 @@ export default function BackgroundLayerComp({ layer }: { layer: BackgroundLayer 
 
 
   return (
-    <Sequence from={layer.from} durationInFrames={duration}>
-      <AbsoluteFill style={{ opacity: t.opacity, transform: t.transform }}>
-        {isGif ? (
-          <Gif
-            key={`${layer.id}-${layer.from}-${layer.to}`}
-            src={layer.src}
-            style={{ width: "100%", height: "100%" }}
-            fit={layer.fit ?? "cover"}
-          />
-        ) : (
-          <Img
-            src={layer.src}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: layer.fit ?? "cover",
-            }}
-          />
-        )}
-      </AbsoluteFill>
-    </Sequence>
+    <AbsoluteFill style={{ opacity: t.opacity, transform: t.transform, filter: t.filter }}>
+      {isGif ? (
+        <Gif
+          key={`${layer.id}-${layer.from}-${layer.to}`}
+          src={layer.src}
+          style={{ width: "100%", height: "100%" }}
+          fit={layer.fit ?? "cover"}
+        />
+      ) : (
+        <Img
+          src={layer.src}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: layer.fit ?? "cover",
+          }}
+        />
+      )}
+    </AbsoluteFill>
   );
 }

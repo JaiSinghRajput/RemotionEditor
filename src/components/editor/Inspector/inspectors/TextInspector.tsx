@@ -51,6 +51,19 @@ export default function TextInspector({ layer }: { layer: TextLayer }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
+        <FieldNumber
+          label="X"
+          value={layer.x}
+          onChange={(v) => updateLayer(layer.id, "text", { x: v })}
+        />
+        <FieldNumber
+          label="Y"
+          value={layer.y}
+          onChange={(v) => updateLayer(layer.id, "text", { y: v })}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <FieldSelect
           label="Weight"
           value={String(layer.fontWeight)}

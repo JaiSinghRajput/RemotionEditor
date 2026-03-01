@@ -2,6 +2,7 @@ import { AbsoluteFill, Sequence } from "remotion";
 import { Project } from "../lib/editor/types";
 import BackgroundLayerComp from "./layers/BackgroundLayer";
 import TextLayerComp from "./layers/TextLayer";
+import AudioLayerComp from "./layers/AudioLayer";
 import { useEffect, useState } from "react";
 import { delayRender, continueRender } from "remotion";
 import { loadProjectFonts } from "../lib/fonts/loadProjectFonts";
@@ -23,6 +24,7 @@ export const VideoComposition = ({ project }: { project: Project }) => {
         <Sequence key={layer.id} from={layer.from} durationInFrames={layer.to - layer.from}>
           {layer.type === "background" && <BackgroundLayerComp layer={layer} />}
           {layer.type === "text" && <TextLayerComp layer={layer} />}
+          {layer.type === "audio" && <AudioLayerComp layer={layer} />}
         </Sequence>
       ))}
     </AbsoluteFill>

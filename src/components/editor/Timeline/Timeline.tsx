@@ -16,11 +16,13 @@ export default function Timeline() {
   if (!project) return null;
 
   const seconds = Math.ceil(project.durationInFrames / project.fps);
+  const visualLayers = project.layers.filter((layer) => layer.type !== "audio");
+  const audioLayers = project.layers.filter((layer) => layer.type === "audio");
 
   const canvasWidth = useMemo(() => seconds * PX_PER_SEC * zoom, [seconds, zoom]);
   const canvasHeight = useMemo(
-    () => 40 + project.layers.length * TRACK_H,
-    [project.layers.length]
+    () => 40 + (visualLayers.length + audioLayers.length + (audioLayers.length > 0 ? 1 : 0)) * TRACK_H,
+    [visualLayers.length, audioLayers.length]
   );
 
   return (
@@ -30,7 +32,20 @@ export default function Timeline() {
           <TimelineRuler canvasWidth={canvasWidth} />
 
           <div style={{ paddingTop: 40 }}>
-            {project.layers.map((layer) => (
+            {visualLayers.map((layer) => (
+              <TimelineTrack key={layer.id} layer={layer} />
+            ))}
+
+            {audioLayers.length > 0 ? (
+              <div
+                className="border-b border-white/10 relative bg-neutral-900/40 px-3 text-xs font-semibold text-cyan-300 flex items-center"
+                style={{ height: TRACK_H }}
+              >
+                Audio Track
+              </div>
+            ) : null}
+
+            {audioLayers.map((layer) => (
               <TimelineTrack key={layer.id} layer={layer} />
             ))}
           </div>

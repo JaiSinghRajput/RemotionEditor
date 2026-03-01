@@ -7,7 +7,10 @@ type TransitionValue =
   | { type: "none" }
   | { type: "fade"; duration: number }
   | { type: "slideUp"; duration: number; distance: number }
+  | { type: "slideDown"; duration: number; distance: number }
   | { type: "slideLeft"; duration: number; distance: number }
+  | { type: "slideRight"; duration: number; distance: number }
+  | { type: "blur"; duration: number; from: number }
   | { type: "zoom"; duration: number; from: number };
 
 export default function FieldTransition({
@@ -32,14 +35,20 @@ export default function FieldTransition({
           { label: "None", value: "none" },
           { label: "Fade", value: "fade" },
           { label: "Slide Up", value: "slideUp" },
+          { label: "Slide Down", value: "slideDown" },
           { label: "Slide Left", value: "slideLeft" },
+          { label: "Slide Right", value: "slideRight" },
+          { label: "Blur", value: "blur" },
           { label: "Zoom", value: "zoom" },
         ]}
         onChange={(type) => {
           if (type === "none") return onChange({ type: "none" });
           if (type === "fade") return onChange({ type: "fade", duration: 12 });
           if (type === "slideUp") return onChange({ type: "slideUp", duration: 12, distance: 80 });
+          if (type === "slideDown") return onChange({ type: "slideDown", duration: 12, distance: 80 });
           if (type === "slideLeft") return onChange({ type: "slideLeft", duration: 12, distance: 120 });
+          if (type === "slideRight") return onChange({ type: "slideRight", duration: 12, distance: 120 });
+          if (type === "blur") return onChange({ type: "blur", duration: 12, from: 16 });
           if (type === "zoom") return onChange({ type: "zoom", duration: 12, from: 0.9 } as any);
         }}
       />
@@ -52,7 +61,7 @@ export default function FieldTransition({
         />
       ) : null}
 
-      {v.type === "slideUp" || v.type === "slideLeft" ? (
+      {v.type === "slideUp" || v.type === "slideDown" || v.type === "slideLeft" || v.type === "slideRight" ? (
         <FieldNumber
           label="Distance (px)"
           value={(v as any).distance ?? 100}
@@ -60,10 +69,10 @@ export default function FieldTransition({
         />
       ) : null}
 
-      {v.type === "zoom" ? (
+      {v.type === "zoom" || v.type === "blur" ? (
         <FieldNumber
-          label="From scale"
-          value={(v as any).from ?? 0.9}
+          label={v.type === "zoom" ? "From scale" : "From blur (px)"}
+          value={(v as any).from ?? (v.type === "zoom" ? 0.9 : 16)}
           onChange={(d) => onChange({ ...(v as any), from: d })}
         />
       ) : null}

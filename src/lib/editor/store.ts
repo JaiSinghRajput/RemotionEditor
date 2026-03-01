@@ -6,6 +6,10 @@ type EditorState = {
   project: Project | null;
   selectedLayerId: string | null;
 
+  // History
+  past: Project[];
+  future: Project[];
+
   // Playback
   currentFrame: number;
   playing: boolean;
@@ -15,6 +19,12 @@ type EditorState = {
   // Project / selection
   setProject: (p: Project) => void;
   selectLayer: (id: string | null) => void;
+
+  // Undo/Redo
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
 
   // Playback controls
   setFrame: (frame: number) => void;
@@ -42,9 +52,31 @@ type EditorState = {
   deleteLayer: (id: string) => void;
 };
 
+// Helper to save current state to history before making changes
+const saveToHistory = (get: () => EditorState, set: (partial: Partial<EditorState>) => void) => {
+  const { project, past } = get();
+  if (!project) return;
+  
+  // Limit history to 50 items
+  const newPast = [...past, project].slice(-50);
+  set({ past: newPast, future: [] });
+};
+
+// Helper to auto-save project to localStorage
+const autoSaveProject = (project: Project | null) => {
+  if (!project || typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`project-${project.id}`, JSON.stringify(project));
+  } catch (error) {
+    console.error("Failed to auto-save project:", error);
+  }
+};
+
 export const useEditorStore = create<EditorState>((set, get) => ({
   project: null,
   selectedLayerId: null,
+  past: [],
+  future: [],
 
   currentFrame: 0,
   playing: false,
@@ -56,9 +88,43 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       currentFrame: 0,
       playing: false,
       selectedLayerId: null,
+      past: [],
+      future: [],
     }),
 
   selectLayer: (id) => set({ selectedLayerId: id }),
+
+  // Undo/Redo
+  undo: () => {
+    const { past, project, future } = get();
+    if (past.length === 0 || !project) return;
+
+    const previous = past[past.length - 1];
+    const newPast = past.slice(0, -1);
+
+    set({
+      past: newPast,
+      project: previous,
+      future: [project, ...future],
+    });
+  },
+
+  redo: () => {
+    const { future, project, past } = get();
+    if (future.length === 0 || !project) return;
+
+    const next = future[0];
+    const newFuture = future.slice(1);
+
+    set({
+      past: [...past, project],
+      project: next,
+      future: newFuture,
+    });
+  },
+
+  canUndo: () => get().past.length > 0,
+  canRedo: () => get().future.length > 0,
 
   // ---- Playback ----
   setFrame: (frame) => {
@@ -104,42 +170,47 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const project = get().project;
     if (!project) return;
 
-    set({
-      project: {
-        ...project,
-        layers: project.layers.map((l) => {
-          if (l.id !== id) return l;
-          if (l.type !== type) return l;
-          return { ...l, ...patch } as Layer;
-        }),
-      },
-    });
+    saveToHistory(get, set);
+    const updatedProject = {
+      ...project,
+      layers: project.layers.map((l) => {
+        if (l.id !== id) return l;
+        if (l.type !== type) return l;
+        return { ...l, ...patch } as Layer;
+      }),
+    };
+    set({ project: updatedProject });
+    autoSaveProject(updatedProject);
   },
 
   addLayer: (layer) => {
     const project = get().project;
     if (!project) return;
 
-    set({
-      project: {
-        ...project,
-        layers: [...project.layers, layer],
-      },
-    });
+    saveToHistory(get, set);
+    const updatedProject = {
+      ...project,
+      layers: [...project.layers, layer],
+    };
+    set({ project: updatedProject });
+    autoSaveProject(updatedProject);
   },
 
   deleteLayer: (id) => {
     const project = get().project;
     if (!project) return;
 
+    saveToHistory(get, set);
+    const updatedProject = {
+      ...project,
+      layers: project.layers.filter((l) => l.id !== id),
+    };
     set({
-      project: {
-        ...project,
-        layers: project.layers.filter((l) => l.id !== id),
-      },
+      project: updatedProject,
       selectedLayerId:
         get().selectedLayerId === id ? null : get().selectedLayerId,
     });
+    autoSaveProject(updatedProject);
   },
   setFormat: (newW, newH) => {
     const project = get().project;
@@ -150,34 +221,34 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     const sx = newW / oldW;
     const sy = newH / oldH;
-
-    set({
-      project: {
-        ...project,
-        width: newW,
-        height: newH,
-        layers: project.layers.map((l) => {
-          if (l.type !== "text") return l;
-          return {
-            ...l,
-            x: Math.round(l.x * sx),
-            y: Math.round(l.y * sy),
-            fontSize: Math.max(12, Math.round(l.fontSize * Math.min(sx, sy))),
-          };
-        }),
-      },
-    });
+const updatedProject = {
+      ...project,
+      width: newW,
+      height: newH,
+      layers: project.layers.map((l) => {
+        if (l.type !== "text") return l;
+        return {
+          ...l,
+          x: Math.round(l.x * sx),
+          y: Math.round(l.y * sy),
+          fontSize: Math.max(12, Math.round(l.fontSize * Math.min(sx, sy))),
+        };
+      }),
+    };
+    set({ project: updatedProject });
+    autoSaveProject(updatedProject);
   },
 
   setDuration: (durationInFrames) => {
     const project = get().project;
     if (!project) return;
 
-    set({
-      project: {
-        ...project,
-        durationInFrames,
-      },
-    });
+    saveToHistory(get, set);
+    const updatedProject = {
+      ...project,
+      durationInFrames,
+    };
+    set({ project: updatedProject });
+    autoSaveProject(updatedProject);
   },
 }));

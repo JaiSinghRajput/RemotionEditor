@@ -14,6 +14,7 @@ export function getTransitionStyle(params: {
   let translateX = 0;
   let translateY = 0;
   let scale = 1;
+  let blur = 0;
 
   // ✅ IN transition
   if (transitionIn?.type === "fade") {
@@ -31,6 +32,15 @@ export function getTransitionStyle(params: {
     });
   }
 
+  if (transitionIn?.type === "slideDown") {
+    const d = transitionIn.distance ?? 80;
+    const p = spring({ fps, frame: localFrame, config: { damping: 200 } });
+    translateY = (p - 1) * d;
+    opacity *= interpolate(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp",
+    });
+  }
+
   if (transitionIn?.type === "slideLeft") {
     const d = transitionIn.distance ?? 120;
     const p = spring({ fps, frame: localFrame, config: { damping: 200 } });
@@ -40,10 +50,29 @@ export function getTransitionStyle(params: {
     });
   }
 
+  if (transitionIn?.type === "slideRight") {
+    const d = transitionIn.distance ?? 120;
+    const p = spring({ fps, frame: localFrame, config: { damping: 200 } });
+    translateX = (p - 1) * d;
+    opacity *= interpolate(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp",
+    });
+  }
+
   if (transitionIn?.type === "zoom") {
     const from = transitionIn.from ?? 0.9;
     const p = spring({ fps, frame: localFrame, config: { damping: 200 } });
     scale = from + (1 - from) * p;
+    opacity *= interpolate(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp",
+    });
+  }
+
+  if (transitionIn?.type === "blur") {
+    const from = transitionIn.from ?? 16;
+    blur = interpolate(localFrame, [0, transitionIn.duration], [from, 0], {
+      extrapolateRight: "clamp",
+    });
     opacity *= interpolate(localFrame, [0, transitionIn.duration], [0, 1], {
       extrapolateRight: "clamp",
     });
@@ -70,12 +99,36 @@ export function getTransitionStyle(params: {
     });
   }
 
+  if (transitionOut?.type === "slideDown") {
+    const d = transitionOut.distance ?? 80;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = spring({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateY = p * d;
+    opacity *= interpolate(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+  }
+
   if (transitionOut?.type === "slideLeft") {
     const d = transitionOut.distance ?? 120;
     const start = duration - transitionOut.duration;
     const localTransitionFrame = Math.max(0, localFrame - start);
     const p = spring({ fps, frame: localTransitionFrame, config: { damping: 200 } });
     translateX = -p * d;
+    opacity *= interpolate(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+  }
+
+  if (transitionOut?.type === "slideRight") {
+    const d = transitionOut.distance ?? 120;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = spring({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateX = p * d;
     opacity *= interpolate(localFrame, [start, duration], [1, 0], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
@@ -94,8 +147,22 @@ export function getTransitionStyle(params: {
     });
   }
 
+  if (transitionOut?.type === "blur") {
+    const from = transitionOut.from ?? 16;
+    const start = duration - transitionOut.duration;
+    blur = interpolate(localFrame, [start, duration], [0, from], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+    opacity *= interpolate(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+  }
+
   return {
     opacity,
+    filter: blur > 0 ? `blur(${blur}px)` : undefined,
     transform: `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`,
   };
 }

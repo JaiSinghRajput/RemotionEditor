@@ -23,7 +23,7 @@ export default function TextLayerComp({ layer }: { layer: TextLayer }) {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   // relative frame inside layer
-  const localFrame = frame - layer.from;
+  const localFrame = frame;
   const duration = layer.to - layer.from;
 
   const inAnim = layer.animationIn;
@@ -123,6 +123,7 @@ export default function TextLayerComp({ layer }: { layer: TextLayer }) {
 
           opacity: finalOpacity,
           transform: finalTransform,
+          filter: t.filter,
           transformOrigin: "top left",
 
           fontSize: layer.fontSize,

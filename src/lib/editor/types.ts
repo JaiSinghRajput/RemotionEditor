@@ -12,7 +12,10 @@ export type Transition =
   | { type: "none" }
   | { type: "fade"; duration: number }
   | { type: "slideUp"; duration: number; distance: number }
+  | { type: "slideDown"; duration: number; distance: number }
   | { type: "slideLeft"; duration: number; distance: number }
+  | { type: "slideRight"; duration: number; distance: number }
+  | { type: "blur"; duration: number; from: number }
   | { type: "zoom"; duration: number; from: number };
 
 export type BaseLayer = {
@@ -32,6 +35,13 @@ export type BackgroundLayer = BaseLayer & {
   type: "background";
   src: string;
   fit?: "cover" | "contain";
+};
+
+export type AudioLayer = BaseLayer & {
+  type: "audio";
+  src: string;
+  volume: number;
+  startFrom: number;
 };
 
 export type TextAnimation =
@@ -99,5 +109,5 @@ export type TextLayer = BaseLayer & {
 };
 
 
-export type Layer = BackgroundLayer | TextLayer;
+export type Layer = BackgroundLayer | TextLayer | AudioLayer;
 
