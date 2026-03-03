@@ -7,7 +7,7 @@ export default function AudioLayerComp({ layer }: { layer: AudioLayer }) {
   return (
     <Audio
       src={layer.src}
-      volume={Math.max(0, layer.volume)}
+      volume={Math.max(0, layer.volume ?? 1)}
       startFrom={Math.max(0, Math.floor(layer.startFrom ?? 0))}
     />
   );

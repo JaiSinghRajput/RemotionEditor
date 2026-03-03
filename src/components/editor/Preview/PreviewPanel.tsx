@@ -65,9 +65,9 @@ export default function PreviewPanel() {
         </div>
       </div>
 
-      {/* ✅ CONTROLS always centered */}
-      <div className="h-[80px] flex items-center justify-center border-t border-white/10">
-        <div className="rounded-xl border border-white/20 bg-neutral-900/80 backdrop-blur-sm px-5 py-3 shadow-lg">
+      {/* CONTROLS */}
+      <div className="h-[90px] flex items-center justify-center border-t border-white/5 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-white/8 bg-[#111114]/90 backdrop-blur-sm px-5 py-3 shadow-xl">
           <PlaybackControls />
         </div>
       </div>

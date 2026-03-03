@@ -13,6 +13,7 @@ type EditorState = {
   // Playback
   currentFrame: number;
   playing: boolean;
+  muted: boolean;
   zoom: number;
 
 
@@ -34,6 +35,7 @@ type EditorState = {
   play: () => void;
   pause: () => void;
   togglePlay: () => void;
+  toggleMute: () => void;
   setFormat: (width: number, height: number) => void;
   setDuration: (durationInFrames: number) => void;
 
@@ -47,6 +49,16 @@ type EditorState = {
     patch: Partial<Omit<Extract<Layer, { type: T }>, "id" | "type">>
   ) => void;
 
+  // Silent update: no history push, no autosave — used for real-time drag
+  updateLayerSilent: <T extends Layer["type"]>(
+    id: string,
+    type: T,
+    patch: Partial<Omit<Extract<Layer, { type: T }>, "id" | "type">>
+  ) => void;
+
+  // Commit drag end: save to history + trigger autosave
+  commitHistory: () => void;
+
 
   addLayer: (layer: Layer) => void;
   deleteLayer: (id: string) => void;
@@ -56,20 +68,24 @@ type EditorState = {
 const saveToHistory = (get: () => EditorState, set: (partial: Partial<EditorState>) => void) => {
   const { project, past } = get();
   if (!project) return;
-  
+
   // Limit history to 50 items
   const newPast = [...past, project].slice(-50);
   set({ past: newPast, future: [] });
 };
 
-// Helper to auto-save project to localStorage
+// Debounced auto-save — fires at most once per 800ms of inactivity
+let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
 const autoSaveProject = (project: Project | null) => {
   if (!project || typeof window === "undefined") return;
-  try {
-    localStorage.setItem(`project-${project.id}`, JSON.stringify(project));
-  } catch (error) {
-    console.error("Failed to auto-save project:", error);
-  }
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(`project-${project.id}`, JSON.stringify(project));
+    } catch (error) {
+      console.error("Failed to auto-save project:", error);
+    }
+  }, 800);
 };
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -80,6 +96,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   currentFrame: 0,
   playing: false,
+  muted: false,
   zoom: 1,
 
   setProject: (p) =>
@@ -161,11 +178,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   play: () => set({ playing: true }),
   pause: () => set({ playing: false }),
   togglePlay: () => set((s) => ({ playing: !s.playing })),
+  toggleMute: () => set((s) => ({ muted: !s.muted })),
 
   // ---- Zoom ----
   setZoom: (z) => set({ zoom: z }),
 
-  // ---- Layers ----
+  // Standard update (with history + autosave) — for inspector field changes
   updateLayer: (id, type, patch) => {
     const project = get().project;
     if (!project) return;
@@ -181,6 +199,31 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     };
     set({ project: updatedProject });
     autoSaveProject(updatedProject);
+  },
+
+  // Silent update — no history push, no autosave — used during drag pointer-move
+  updateLayerSilent: (id, type, patch) => {
+    const project = get().project;
+    if (!project) return;
+
+    set({
+      project: {
+        ...project,
+        layers: project.layers.map((l) => {
+          if (l.id !== id) return l;
+          if (l.type !== type) return l;
+          return { ...l, ...patch } as Layer;
+        }),
+      },
+    });
+  },
+
+  // Commit — call on pointer-up to snapshot history and trigger debounced save
+  commitHistory: () => {
+    const { project } = get();
+    if (!project) return;
+    saveToHistory(get, set);
+    autoSaveProject(project);
   },
 
   addLayer: (layer) => {
@@ -221,7 +264,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     const sx = newW / oldW;
     const sy = newH / oldH;
-const updatedProject = {
+    const updatedProject = {
       ...project,
       width: newW,
       height: newH,

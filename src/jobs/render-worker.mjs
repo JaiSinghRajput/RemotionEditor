@@ -22,11 +22,22 @@ async function runOneJob(file) {
 
   const entry = path.join(root, "src", "remotion", "index.ts");
 
+  // publicDir tells Remotion's bundler to serve everything in public/
+  // so /uploads/audio.mp3 resolves correctly inside the composition
+  const publicDir = path.join(root, "public");
+
+  console.log("📦 Bundling...");
   const serveUrl = await bundle({
     entryPoint: entry,
     outDir: bundleDir,
+    publicDir,
     webpackOverride: (config) => config,
+    enableCaching: false,
+    onProgress: (progress) => {
+      process.stdout.write(`\r📦 Bundle: ${Math.round(progress * 100)}%  `);
+    },
   });
+  console.log("\n📦 Bundle ready:", serveUrl);
 
   const comps = await getCompositions(serveUrl, { inputProps: { project } });
 
@@ -42,7 +53,7 @@ async function runOneJob(file) {
     outputLocation: outPath,
     inputProps: { project },
     onProgress: ({ progress }) => {
-      process.stdout.write(`\r${(progress * 100).toFixed(1)}%`);
+      process.stdout.write(`\r🎬 Rendering: ${(progress * 100).toFixed(1)}%`);
     },
   });
 

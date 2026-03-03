@@ -2,7 +2,7 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 8515:
+/***/ 9921:
 /***/ ((__unused_webpack_module, __unused_webpack___webpack_exports__, __webpack_require__) => {
 
 
@@ -1303,6 +1303,7 @@ function getTransitionStyle(params) {
   let translateX = 0;
   let translateY = 0;
   let scale = 1;
+  let blur = 0;
   if ((transitionIn == null ? void 0 : transitionIn.type) === "fade") {
     opacity *= (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [0, 1], {
       extrapolateRight: "clamp"
@@ -1316,10 +1317,26 @@ function getTransitionStyle(params) {
       extrapolateRight: "clamp"
     });
   }
+  if ((transitionIn == null ? void 0 : transitionIn.type) === "slideDown") {
+    const d = transitionIn.distance ?? 80;
+    const p = (0,esm.spring)({ fps, frame: localFrame, config: { damping: 200 } });
+    translateY = (p - 1) * d;
+    opacity *= (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp"
+    });
+  }
   if ((transitionIn == null ? void 0 : transitionIn.type) === "slideLeft") {
     const d = transitionIn.distance ?? 120;
     const p = (0,esm.spring)({ fps, frame: localFrame, config: { damping: 200 } });
     translateX = (1 - p) * d;
+    opacity *= (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionIn == null ? void 0 : transitionIn.type) === "slideRight") {
+    const d = transitionIn.distance ?? 120;
+    const p = (0,esm.spring)({ fps, frame: localFrame, config: { damping: 200 } });
+    translateX = (p - 1) * d;
     opacity *= (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [0, 1], {
       extrapolateRight: "clamp"
     });
@@ -1332,6 +1349,15 @@ function getTransitionStyle(params) {
       extrapolateRight: "clamp"
     });
   }
+  if ((transitionIn == null ? void 0 : transitionIn.type) === "blur") {
+    const from = transitionIn.from ?? 16;
+    blur = (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [from, 0], {
+      extrapolateRight: "clamp"
+    });
+    opacity *= (0,esm.interpolate)(localFrame, [0, transitionIn.duration], [0, 1], {
+      extrapolateRight: "clamp"
+    });
+  }
   if ((transitionOut == null ? void 0 : transitionOut.type) === "fade") {
     const start = duration - transitionOut.duration;
     opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
@@ -1339,8 +1365,76 @@ function getTransitionStyle(params) {
       extrapolateRight: "clamp"
     });
   }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "slideUp") {
+    const d = transitionOut.distance ?? 80;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = (0,esm.spring)({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateY = -p * d;
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "slideDown") {
+    const d = transitionOut.distance ?? 80;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = (0,esm.spring)({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateY = p * d;
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "slideLeft") {
+    const d = transitionOut.distance ?? 120;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = (0,esm.spring)({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateX = -p * d;
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "slideRight") {
+    const d = transitionOut.distance ?? 120;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = (0,esm.spring)({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    translateX = p * d;
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "zoom") {
+    const from = transitionOut.from ?? 0.9;
+    const start = duration - transitionOut.duration;
+    const localTransitionFrame = Math.max(0, localFrame - start);
+    const p = (0,esm.spring)({ fps, frame: localTransitionFrame, config: { damping: 200 } });
+    scale = 1 - (1 - from) * p;
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
+  if ((transitionOut == null ? void 0 : transitionOut.type) === "blur") {
+    const from = transitionOut.from ?? 16;
+    const start = duration - transitionOut.duration;
+    blur = (0,esm.interpolate)(localFrame, [start, duration], [0, from], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+    opacity *= (0,esm.interpolate)(localFrame, [start, duration], [1, 0], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp"
+    });
+  }
   return {
     opacity,
+    filter: blur > 0 ? `blur(${blur}px)` : void 0,
     transform: `translateX(${translateX}px) translateY(${translateY}px) scale(${scale})`
   };
 }
@@ -1355,7 +1449,7 @@ function BackgroundLayerComp({ layer }) {
   const frame = (0,esm.useCurrentFrame)();
   const { fps } = (0,esm.useVideoConfig)();
   if (!layer.src) return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { backgroundColor: "black" } });
-  const localFrame = frame - layer.from;
+  const localFrame = frame;
   const duration = layer.to - layer.from;
   const t = getTransitionStyle({
     localFrame,
@@ -1365,7 +1459,7 @@ function BackgroundLayerComp({ layer }) {
     transitionOut: layer.transitionOut
   });
   const isGif = layer.src.toLowerCase().includes(".gif") || layer.src.toLowerCase().includes("f_gif");
-  return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.Sequence, { from: layer.from, durationInFrames: duration, children: /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { opacity: t.opacity, transform: t.transform }, children: isGif ? /* @__PURE__ */ (0,jsx_runtime.jsx)(
+  return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { opacity: t.opacity, transform: t.transform, filter: t.filter }, children: isGif ? /* @__PURE__ */ (0,jsx_runtime.jsx)(
     Gif,
     {
       src: layer.src,
@@ -1383,32 +1477,232 @@ function BackgroundLayerComp({ layer }) {
         objectFit: layer.fit ?? "cover"
       }
     }
-  ) }) });
+  ) });
+}
+
+;// ./src/lib/fonts/cdnFonts.ts
+
+const CDN_FONTS = [
+  // Sans-Serif
+  { name: "Helvetica Neue", slug: "helvetica-neue-5", category: "sans-serif" },
+  { name: "Gotham", slug: "gotham", category: "sans-serif" },
+  { name: "Futura", slug: "futura-2", category: "sans-serif" },
+  { name: "Avenir", slug: "avenir", category: "sans-serif" },
+  { name: "Proxima Nova", slug: "proxima-nova-2", category: "sans-serif" },
+  { name: "Brandon Grotesque", slug: "brandon-grotesque", category: "sans-serif" },
+  { name: "Din", slug: "din-2014", category: "sans-serif" },
+  { name: "Century Gothic", slug: "century-gothic", category: "sans-serif" },
+  { name: "Gilroy", slug: "gilroy-bold", category: "sans-serif" },
+  { name: "Sofia Pro", slug: "sofia-pro", category: "sans-serif" },
+  { name: "Circular Std", slug: "circular-std", category: "sans-serif" },
+  { name: "TT Commons", slug: "tt-commons", category: "sans-serif" },
+  { name: "Nexa", slug: "nexa-bold", category: "sans-serif" },
+  { name: "Product Sans", slug: "product-sans", category: "sans-serif" },
+  { name: "SF Pro Display", slug: "sf-pro-display", category: "sans-serif" },
+  { name: "Metropolis", slug: "metropolis-2", category: "sans-serif" },
+  { name: "Gotham Rounded", slug: "gotham-rounded", category: "sans-serif" },
+  { name: "TT Norms", slug: "tt-norms", category: "sans-serif" },
+  { name: "Museo Sans", slug: "museo-sans", category: "sans-serif" },
+  { name: "Akrobat", slug: "akrobat", category: "sans-serif" },
+  // Serif
+  { name: "Didot", slug: "didot-2", category: "serif" },
+  { name: "Bodoni", slug: "bodoni-mt", category: "serif" },
+  { name: "Caslon", slug: "adobe-caslon-pro", category: "serif" },
+  { name: "Garamond", slug: "garamond", category: "serif" },
+  { name: "Baskerville", slug: "libre-baskerville", category: "serif" },
+  { name: "Trajan", slug: "trajan-pro", category: "serif" },
+  { name: "Minion Pro", slug: "minion-pro", category: "serif" },
+  { name: "Big Caslon", slug: "big-caslon", category: "serif" },
+  { name: "Freight Text", slug: "freight-text-pro", category: "serif" },
+  { name: "Mrs Eaves", slug: "mrs-eaves", category: "serif" },
+  // Display & Decorative
+  { name: "Wisdom Script", slug: "wisdom-script", category: "display" },
+  { name: "Lyka Gemelos", slug: "lyka-gemelos", category: "display" },
+  { name: "More Than Life", slug: "more-than-life", category: "display" },
+  { name: "Holiday Trip", slug: "holiday-trip", category: "display" },
+  { name: "Intro", slug: "intro", category: "display" },
+  { name: "Nexa Rust", slug: "nexa-rust", category: "display" },
+  { name: "Voga", slug: "voga", category: "display" },
+  { name: "Blanka", slug: "blanka", category: "display" },
+  { name: "Misto", slug: "misto", category: "display" },
+  { name: "Harley", slug: "harley", category: "display" },
+  { name: "Retro Signature", slug: "retro-signature", category: "display" },
+  { name: "Wild Youth", slug: "wild-youth", category: "display" },
+  { name: "Northwell", slug: "northwell", category: "display" },
+  { name: "Playlist", slug: "playlist", category: "display" },
+  { name: "Beyno", slug: "beyno", category: "display" },
+  { name: "Coneria Script", slug: "coneria-script", category: "display" },
+  { name: "Angilla Tattoo", slug: "angilla-tattoo", category: "display" },
+  { name: "Billionaire", slug: "billionaire", category: "display" },
+  { name: "Blacklisted", slug: "blacklisted", category: "display" },
+  { name: "Bookeyed Jack", slug: "bookeyed-jack", category: "display" },
+  { name: "California Sunrise", slug: "california-sunrise", category: "display" },
+  { name: "Champagne Limousines", slug: "champagne-limousines", category: "display" },
+  // Handwriting & Script
+  { name: "Allura", slug: "allura", category: "handwriting" },
+  { name: "Angelina", slug: "angelina", category: "handwriting" },
+  { name: "Brittany Signature", slug: "brittany-signature", category: "handwriting" },
+  { name: "Honey Script", slug: "honey-script", category: "handwriting" },
+  { name: "Southam", slug: "southam", category: "handwriting" },
+  { name: "Sacramento", slug: "sacramento", category: "handwriting" },
+  { name: "Mistral", slug: "mistral", category: "handwriting" },
+  { name: "Lucida Handwriting", slug: "lucida-handwriting", category: "handwriting" },
+  { name: "Brush Script", slug: "brush-script-mt", category: "handwriting" },
+  { name: "Yellowtail", slug: "yellowtail", category: "handwriting" },
+  // Monospace
+  { name: "Monaco", slug: "monaco", category: "monospace" },
+  { name: "Consolas", slug: "consolas", category: "monospace" },
+  { name: "Operator Mono", slug: "operator-mono", category: "monospace" },
+  { name: "Input Mono", slug: "input-mono", category: "monospace" },
+  { name: "Dank Mono", slug: "dank-mono", category: "monospace" }
+];
+const loaded = /* @__PURE__ */ new Set();
+const fontLoadPromises = /* @__PURE__ */ new Map();
+function fontNameToSlug(fontName) {
+  return fontName.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+}
+function getCdnFontCssUrl(slug) {
+  return `https://fonts.cdnfonts.com/css/${slug}`;
+}
+async function waitForFontLoad(fontFamily, timeout = 3e3) {
+  if (!document.fonts) {
+    await new Promise((r) => setTimeout(r, 300));
+    return;
+  }
+  try {
+    await Promise.race([
+      document.fonts.load(`1em "${fontFamily}"`),
+      new Promise(
+        (_, reject) => setTimeout(() => reject(new Error("Font load timeout")), timeout)
+      )
+    ]);
+    await Promise.race([
+      document.fonts.ready,
+      new Promise((resolve) => setTimeout(resolve, 500))
+    ]);
+  } catch (error) {
+    console.warn(`CDN font ${fontFamily} load timeout, continuing...`);
+  }
+}
+async function cdnFonts_ensureCdnFontLoaded(fontName, slug) {
+  const key = `cdn-${fontName}`;
+  if (fontLoadPromises.has(key)) {
+    return fontLoadPromises.get(key);
+  }
+  if (loaded.has(key)) return;
+  const loadPromise = (async () => {
+    const finalSlug = slug || fontNameToSlug(fontName);
+    const href = getCdnFontCssUrl(finalSlug);
+    const exists = Array.from(document.querySelectorAll("link")).some(
+      (l) => l.getAttribute("href") === href
+    );
+    if (!exists) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      document.head.appendChild(link);
+    }
+    await waitForFontLoad(fontName);
+    loaded.add(key);
+  })();
+  fontLoadPromises.set(key, loadPromise);
+  try {
+    await loadPromise;
+  } finally {
+    fontLoadPromises.delete(key);
+  }
+}
+function searchCdnFonts(query) {
+  if (!query.trim()) return CDN_FONTS.slice(0, 50);
+  const lowerQuery = query.toLowerCase();
+  const matchingFonts = CDN_FONTS.filter(
+    (font) => font.name.toLowerCase().includes(lowerQuery) || font.category.toLowerCase().includes(lowerQuery)
+  );
+  if (query.trim().length > 2) {
+    const exactMatch = CDN_FONTS.some(
+      (f) => f.name.toLowerCase() === lowerQuery
+    );
+    if (!exactMatch && query.trim().length >= 3) {
+      matchingFonts.push({
+        name: query.trim(),
+        slug: fontNameToSlug(query),
+        category: "custom"
+      });
+    }
+  }
+  return matchingFonts;
 }
 
 ;// ./src/lib/fonts/googleFonts.ts
 
-const loaded = /* @__PURE__ */ new Set();
+
+const googleFonts_loaded = /* @__PURE__ */ new Set();
+const googleFonts_fontLoadPromises = /* @__PURE__ */ new Map();
 function fontToGoogleCss(font) {
   return font.trim().split(/\s+/).join("+");
+}
+async function googleFonts_waitForFontLoad(fontFamily, timeout = 3e3) {
+  if (!document.fonts) {
+    await new Promise((r) => setTimeout(r, 300));
+    return;
+  }
+  try {
+    await Promise.race([
+      document.fonts.load(`1em "${fontFamily}"`),
+      new Promise(
+        (_, reject) => setTimeout(() => reject(new Error("Font load timeout")), timeout)
+      )
+    ]);
+    await Promise.race([
+      document.fonts.ready,
+      new Promise((resolve) => setTimeout(resolve, 500))
+    ]);
+  } catch (error) {
+    console.warn(`Font ${fontFamily} load timeout, continuing...`);
+  }
 }
 async function ensureGoogleFontLoaded(fontFamily) {
   const key = fontFamily.trim();
   if (!key) return;
-  if (loaded.has(key)) return;
-  loaded.add(key);
-  const href = `https://fonts.googleapis.com/css2?family=${fontToGoogleCss(
-    key
-  )}:wght@100;200;300;400;500;600;700;800;900&display=swap`;
-  const exists = Array.from(document.querySelectorAll("link")).some(
-    (l) => l.getAttribute("href") === href
-  );
-  if (exists) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = href;
-  document.head.appendChild(link);
-  await new Promise((r) => setTimeout(r, 150));
+  if (googleFonts_fontLoadPromises.has(key)) {
+    return googleFonts_fontLoadPromises.get(key);
+  }
+  if (googleFonts_loaded.has(key)) return;
+  const loadPromise = (async () => {
+    const cdnFont = CDN_FONTS.find((f) => f.name === key);
+    if (cdnFont) {
+      await cdnFonts_ensureCdnFontLoaded(cdnFont.name, cdnFont.slug);
+      await googleFonts_waitForFontLoad(key);
+      googleFonts_loaded.add(key);
+      return;
+    }
+    const href = `https://fonts.googleapis.com/css2?family=${fontToGoogleCss(
+      key
+    )}:wght@100;200;300;400;500;600;700;800;900&display=block`;
+    const exists = Array.from(document.querySelectorAll("link")).some(
+      (l) => {
+        var _a;
+        return (_a = l.getAttribute("href")) == null ? void 0 : _a.includes(fontToGoogleCss(key));
+      }
+    );
+    if (!exists) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      document.head.appendChild(link);
+    }
+    await googleFonts_waitForFontLoad(key);
+    googleFonts_loaded.add(key);
+  })();
+  googleFonts_fontLoadPromises.set(key, loadPromise);
+  try {
+    await loadPromise;
+  } finally {
+    googleFonts_fontLoadPromises.delete(key);
+  }
+}
+async function loadCustomCdnFont(fontName) {
+  await ensureCdnFontLoaded(fontName);
 }
 
 ;// ./src/remotion/layers/TextLayer.tsx
@@ -1427,12 +1721,22 @@ function TextLayerComp({ layer }) {
   var _a, _b, _c, _d, _e;
   const frame = (0,esm.useCurrentFrame)();
   const { fps } = (0,esm.useVideoConfig)();
-  const localFrame = frame - layer.from;
+  const [fontLoaded, setFontLoaded] = (0,react.useState)(false);
+  const localFrame = frame;
   const duration = layer.to - layer.from;
   const inAnim = layer.animationIn;
   const outAnim = layer.animationOut;
   (0,react.useEffect)(() => {
-    ensureGoogleFontLoaded(layer.fontFamily);
+    let mounted = true;
+    setFontLoaded(false);
+    ensureGoogleFontLoaded(layer.fontFamily).then(() => {
+      if (mounted) {
+        setFontLoaded(true);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
   }, [layer.fontFamily]);
   let opacity = layer.opacity;
   let animTranslateY = 0;
@@ -1480,6 +1784,7 @@ function TextLayerComp({ layer }) {
   const textShadow = ((_a = layer.shadow) == null ? void 0 : _a.enabled) ? `${layer.shadow.x}px ${layer.shadow.y}px ${layer.shadow.blur}px ${layer.shadow.color}` : void 0;
   const stroke = ((_b = layer.stroke) == null ? void 0 : _b.enabled) ? `${layer.stroke.width}px ${layer.stroke.color}` : void 0;
   const finalTransform = `${t.transform} translateY(${animTranslateY}px) scale(${animScale})`;
+  const finalOpacity = fontLoaded ? opacity : 0;
   return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { children: /* @__PURE__ */ (0,jsx_runtime.jsx)(
     "div",
     {
@@ -1487,8 +1792,9 @@ function TextLayerComp({ layer }) {
         position: "absolute",
         left: layer.x,
         top: layer.y,
-        opacity,
+        opacity: finalOpacity,
         transform: finalTransform,
+        filter: t.filter,
         transformOrigin: "top left",
         fontSize: layer.fontSize,
         lineHeight: layer.lineHeight,
@@ -1508,6 +1814,22 @@ function TextLayerComp({ layer }) {
       children: displayText
     }
   ) });
+}
+
+;// ./src/remotion/layers/AudioLayer.tsx
+
+
+
+function AudioLayerComp({ layer }) {
+  if (!layer.src) return null;
+  return /* @__PURE__ */ (0,jsx_runtime.jsx)(
+    esm.Audio,
+    {
+      src: layer.src,
+      volume: Math.max(0, layer.volume ?? 1),
+      startFrom: Math.max(0, Math.floor(layer.startFrom ?? 0))
+    }
+  );
 }
 
 ;// ./src/lib/fonts/loadProjectFonts.ts
@@ -1530,6 +1852,7 @@ async function loadProjectFonts(project) {
 
 
 
+
 const VideoComposition = ({ project }) => {
   const [handle] = (0,react.useState)(() => (0,esm.delayRender)("Loading fonts"));
   const layers = project.layers.filter((l) => l.enabled).slice().sort((a, b) => a.zIndex - b.zIndex);
@@ -1538,7 +1861,8 @@ const VideoComposition = ({ project }) => {
   }, [project, handle]);
   return /* @__PURE__ */ (0,jsx_runtime.jsx)(esm.AbsoluteFill, { style: { backgroundColor: "black" }, children: layers.map((layer) => /* @__PURE__ */ (0,jsx_runtime.jsxs)(esm.Sequence, { from: layer.from, durationInFrames: layer.to - layer.from, children: [
     layer.type === "background" && /* @__PURE__ */ (0,jsx_runtime.jsx)(BackgroundLayerComp, { layer }),
-    layer.type === "text" && /* @__PURE__ */ (0,jsx_runtime.jsx)(TextLayerComp, { layer })
+    layer.type === "text" && /* @__PURE__ */ (0,jsx_runtime.jsx)(TextLayerComp, { layer }),
+    layer.type === "audio" && /* @__PURE__ */ (0,jsx_runtime.jsx)(AudioLayerComp, { layer })
   ] }, layer.id)) });
 };
 
@@ -1846,7 +2170,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, "@layer theme, base, components, utilit
 var ___CSS_LOADER_EXPORT___ = _node_modules_pnpm_css_loader_5_2_7_webpack_5_96_1_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_pnpm_css_loader_5_2_7_webpack_5_96_1_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 ___CSS_LOADER_EXPORT___.i(_node_modules_pnpm_css_loader_5_2_7_webpack_5_96_1_node_modules_css_loader_dist_cjs_js_node_modules_pnpm_tailwindcss_4_0_3_node_modules_tailwindcss_index_css__WEBPACK_IMPORTED_MODULE_2__/* ["default"] */ .A);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n", "",{"version":3,"sources":[],"names":[],"mappings":"","sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* Prevent font flickering during load */\n@supports (font-display: block) {\n  @font-face {\n    font-display: block;\n  }\n}\n\n/* Ensure fonts are loaded before rendering */\nbody {\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}", "",{"version":3,"sources":["webpack://./styles/global.css"],"names":[],"mappings":"AACA,wCAAwC;AACxC;EACE;IACE,mBAAmB;EACrB;AACF;;AAEA,6CAA6C;AAC7C;EACE,kCAAkC;EAClC,mCAAmC;EACnC,kCAAkC;AACpC","sourcesContent":["@import \"tailwindcss\";\n/* Prevent font flickering during load */\n@supports (font-display: block) {\n  @font-face {\n    font-display: block;\n  }\n}\n\n/* Ensure fonts are loaded before rendering */\nbody {\n  text-rendering: optimizeLegibility;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -29396,7 +29720,7 @@ var NoReactInternals = {
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	__webpack_require__(9365);
-/******/ 	__webpack_require__(8515);
+/******/ 	__webpack_require__(9921);
 /******/ 	__webpack_require__(2316);
 /******/ 	var __webpack_exports__ = __webpack_require__(636);
 /******/ 	

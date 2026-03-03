@@ -1,0 +1,184 @@
+{
+  "jobId": "5ab1d41c-9148-46c8-9f20-e620a308e98d",
+  "project": {
+    "id": "f03d1367-61b4-4eda-b796-25953bbbc2a2",
+    "name": "Product Promo (Copy)",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "durationInFrames": 450,
+    "layers": [
+      {
+        "id": "bg-1",
+        "type": "background",
+        "name": "Background",
+        "from": 0,
+        "to": 150,
+        "zIndex": 0,
+        "enabled": true,
+        "src": "https://images.unsplash.com/photo-1557821552-17105176677c?w=1920&h=1080&fit=crop",
+        "fit": "cover",
+        "transitionIn": {
+          "type": "fade",
+          "duration": 15
+        },
+        "transitionOut": {
+          "type": "fade",
+          "duration": 15
+        }
+      },
+      {
+        "id": "text-1",
+        "type": "text",
+        "name": "Title",
+        "from": 15,
+        "to": 135,
+        "zIndex": 10,
+        "enabled": true,
+        "text": "Your Product Name",
+        "x": 100,
+        "y": 400,
+        "fontSize": 120,
+        "lineHeight": 1.2,
+        "letterSpacing": 0,
+        "color": "#ffffff",
+        "opacity": 1,
+        "fontFamily": "Inter",
+        "fontWeight": 700,
+        "fontStyle": "normal",
+        "textTransform": "none",
+        "align": "left",
+        "shadow": {
+          "enabled": true,
+          "color": "rgba(0,0,0,0.8)",
+          "x": 0,
+          "y": 8,
+          "blur": 24
+        },
+        "stroke": {
+          "enabled": false,
+          "color": "#000000",
+          "width": 6
+        },
+        "background": {
+          "enabled": false,
+          "color": "rgba(0,0,0,0.35)",
+          "paddingX": 18,
+          "paddingY": 10,
+          "radius": 14
+        },
+        "animationIn": {
+          "type": "slideUp",
+          "duration": 20,
+          "distance": 100
+        },
+        "animationOut": {
+          "type": "fade",
+          "duration": 15
+        },
+        "transitionIn": {
+          "type": "slideUp",
+          "duration": 20,
+          "distance": 100
+        },
+        "transitionOut": {
+          "type": "fade",
+          "duration": 15
+        }
+      },
+      {
+        "id": "text-2",
+        "type": "text",
+        "name": "Subtitle",
+        "from": 30,
+        "to": 135,
+        "zIndex": 11,
+        "enabled": true,
+        "text": "Change this text to describe your product",
+        "x": 100,
+        "y": 560,
+        "fontSize": 48,
+        "lineHeight": 1.3,
+        "letterSpacing": 0,
+        "color": "#e0e0e0",
+        "opacity": 1,
+        "fontFamily": "Inter",
+        "fontWeight": 400,
+        "fontStyle": "normal",
+        "textTransform": "none",
+        "align": "left",
+        "shadow": {
+          "enabled": true,
+          "color": "rgba(0,0,0,0.6)",
+          "x": 0,
+          "y": 4,
+          "blur": 12
+        },
+        "stroke": {
+          "enabled": false,
+          "color": "#000000",
+          "width": 6
+        },
+        "background": {
+          "enabled": false,
+          "color": "rgba(0,0,0,0.35)",
+          "paddingX": 18,
+          "paddingY": 10,
+          "radius": 14
+        },
+        "animationIn": {
+          "type": "fade",
+          "duration": 20
+        },
+        "animationOut": {
+          "type": "fade",
+          "duration": 15
+        },
+        "transitionIn": {
+          "type": "fade",
+          "duration": 20
+        },
+        "transitionOut": {
+          "type": "fade",
+          "duration": 15
+        }
+      },
+      {
+        "id": "uOitqyoCY-CAfjxZFHtU7",
+        "type": "audio",
+        "name": "Audio",
+        "from": 0,
+        "to": 149,
+        "zIndex": 5,
+        "enabled": true,
+        "src": "/uploads/Chala_Jata_Hoon__Rajesh_Khanna__Kishore_Kumar__R.D._Burman__Mere_Jeevan_Saathi__Old_Is_Gold-624228e6-b201-4159-90fd-2b6a1095ce01.mp3",
+        "volume": 2,
+        "startFrom": 690,
+        "transitionIn": {
+          "type": "none"
+        },
+        "transitionOut": {
+          "type": "none"
+        }
+      },
+      {
+        "id": "ZAKE0YaXTMqacaaAPMopO",
+        "type": "audio",
+        "name": "Audio",
+        "from": 149,
+        "to": 275,
+        "zIndex": 5,
+        "enabled": true,
+        "src": "/uploads/producesplatinum-vlog-hip-hop-483574-bc6b785b-708b-49d8-8731-ebe798a3437b.mp3",
+        "volume": 1,
+        "startFrom": 149,
+        "transitionIn": {
+          "type": "none"
+        },
+        "transitionOut": {
+          "type": "none"
+        }
+      }
+    ]
+  }
+}

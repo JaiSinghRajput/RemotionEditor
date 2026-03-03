@@ -16,7 +16,7 @@ export default function TimelineRuler({ canvasWidth }: { canvasWidth: number }) 
 
   const seekToPosition = (clientX: number) => {
     if (!rulerRef.current) return;
-    
+
     const rect = rulerRef.current.getBoundingClientRect();
     const x = clientX - rect.left;
     const secondsValue = x / (PX_PER_SEC * zoom);
@@ -42,7 +42,7 @@ export default function TimelineRuler({ canvasWidth }: { canvasWidth: number }) 
   return (
     <div
       ref={rulerRef}
-      className="sticky top-0 z-30 h-10 bg-gradient-to-b from-neutral-800 to-neutral-900 border-b border-white/15 cursor-pointer select-none"
+      className="sticky top-0 z-30 h-10 bg-[#111114] border-b border-white/5 cursor-pointer select-none"
       style={{ width: canvasWidth }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -59,33 +59,31 @@ export default function TimelineRuler({ canvasWidth }: { canvasWidth: number }) 
               className="absolute top-0 h-full"
               style={{ left }}
             >
-              {/* Major tick - full height */}
-              <div className="absolute top-0 bottom-0 w-px bg-white/25 shadow-sm" />
+              {/* Major tick */}
+              <div className="absolute top-0 bottom-0 w-px bg-white/15" />
 
               {/* Sub ticks every 0.5s */}
               {zoom > 1 && (
                 <>
                   <div
-                    className="absolute top-3 bottom-0 w-px bg-white/15"
+                    className="absolute top-4 bottom-0 w-px bg-white/8"
                     style={{ left: PX_PER_SEC * zoom * 0.5 }}
                   />
-                  
                   {/* Sub-sub ticks every 0.1s */}
-                  {zoom > 2 && (
+                  {zoom > 2 &&
                     Array.from({ length: 4 }).map((_, j) => (
                       <div
                         key={`tick-${j}`}
-                        className="absolute top-5 bottom-0 w-px bg-white/8"
+                        className="absolute top-6 bottom-0 w-px bg-white/5"
                         style={{ left: PX_PER_SEC * zoom * (0.1 * (j + 1)) }}
                       />
-                    ))
-                  )}
+                    ))}
                 </>
               )}
 
               {/* label */}
-              <div className="absolute top-1 left-2 text-xs opacity-80 select-none font-semibold text-white/80">
-                {i}s
+              <div className="absolute top-1.5 left-2 text-[10px] font-medium text-white/50 select-none tabular-nums">
+                {i === 0 ? "0:00" : `${Math.floor(i / 60)}:${String(i % 60).padStart(2, "0")}`}
               </div>
             </div>
           );

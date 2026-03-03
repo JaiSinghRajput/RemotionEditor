@@ -2,7 +2,7 @@
 
 import { useEditorStore } from "../../../lib/editor/store";
 
-export default function LayerRow({layerId}: {layerId: string}) {
+export default function LayerRow({ layerId }: { layerId: string }) {
   const project = useEditorStore((s) => s.project)!;
   const selectLayer = useEditorStore((s) => s.selectLayer);
   const selectedLayerId = useEditorStore((s) => s.selectedLayerId);
@@ -12,17 +12,25 @@ export default function LayerRow({layerId}: {layerId: string}) {
 
   const selected = selectedLayerId === layerId;
 
+  const typeColor =
+    layer.type === "audio"
+      ? "bg-cyan-400"
+      : layer.type === "text"
+        ? "bg-violet-400"
+        : "bg-slate-400";
+
   return (
     <button
       onClick={() => selectLayer(layerId)}
-      className={`w-full text-left px-3 py-2 rounded-lg border text-sm transition-all duration-200 ${
-        selected ? "bg-blue-600/30 border-blue-500/50 text-blue-200" : "border-white/15 hover:border-white/30 hover:bg-white/5"
-      }`}
+      className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-150 flex items-center gap-2.5 group ${selected
+          ? "bg-white/8 border border-white/10 text-white"
+          : "border border-transparent hover:border-white/5 hover:bg-white/4 text-white/70 hover:text-white/90"
+        }`}
     >
-      <div className="flex items-center justify-between">
-        <span className="truncate font-medium">{layer.name}</span>
-        <span className="text-xs opacity-60 ml-2">{layer.type}</span>
-      </div>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${typeColor} ${selected ? "opacity-100" : "opacity-50 group-hover:opacity-80"}`} />
+      <span className="truncate font-medium flex-1">{layer.name}</span>
+      <span className={`text-[10px] shrink-0 font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${selected ? "bg-white/10 text-white/60" : "text-white/30 group-hover:text-white/40"
+        }`}>{layer.type.slice(0, 3)}</span>
     </button>
   );
 }
