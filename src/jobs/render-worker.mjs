@@ -34,10 +34,18 @@ async function runOneJob(file) {
     webpackOverride: (config) => config,
     enableCaching: false,
     onProgress: (progress) => {
-      process.stdout.write(`\r📦 Bundle: ${Math.round(progress * 100)}%  `);
+      const p = progress > 1 ? progress / 100 : progress;
+      process.stdout.write(`\r📦 Bundle: ${Math.round(p * 100)}%  `);
     },
   });
   console.log("\n📦 Bundle ready:", serveUrl);
+
+  // Manually ensure the public files are at the root of the bundle directory
+  // This is a workaround for issues with publicDir not being served at the root correctly during bundle API usage on some environments.
+  if (fs.existsSync(publicDir)) {
+    fs.cpSync(publicDir, bundleDir, { recursive: true });
+    // console.log("📁 Public assets synced to bundle root");
+  }
 
   const comps = await getCompositions(serveUrl, { inputProps: { project } });
 
